@@ -1,0 +1,2 @@
+CLC bio Partners with Illumina to Provide Next Generation Sequencing Analysis Technology.
+CLC bio A/S announced the release of its next major version of their flagship product: CLC Genomics Workbench 2.0. Additionally, CLC bio has taken another important step in leading next generation sequencing data analysis by becoming an Illumina Connect partner. Illumina Connect is a bioinformatics software partnership program established by Illumina Inc. to advance data integration and analysis.

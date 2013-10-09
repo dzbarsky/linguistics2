@@ -1,0 +1,2 @@
+Brocade Proposal to Develop API for Fabric-Based Applications Accepted by INCITS Technical Committee T11.
+Brocade Communications Systems Inc. the world's leading provider of infrastructure for Storage Area Networks (SANs), announced that its proposal to standardize an Application Programming Interface (API) for fabric-based applications accepted by the International Committee for Information Technology Standards (INCITS) Technical Committee T11.

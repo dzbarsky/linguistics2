@@ -1,0 +1,2 @@
+Brocade to Showcase 2 Gbit/Sec SAN Infrastructure at Storage Networking World Spring 2002.
+Brocade Communications Systems Inc. (Brocade(R)) will demonstrate its entire 2 Gigabit per second (Gbit/sec) SilkWorm(R) product family of fabric switches, the industry's leading intelligent platform for networking storage at its exhibit P15. Brocade fabric switches for Storage Area Networks (SAN) will also power the Storage Networking Industry Association's (SNIA) demonstration of the first-ever standard interface for the management of multi-vendor storage networks.

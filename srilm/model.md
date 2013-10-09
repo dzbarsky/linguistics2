@@ -1,0 +1,15 @@
+
+\data\
+ngram 1=2
+ngram 2=0
+ngram 3=0
+
+\1-grams:
+0	</s>
+-99	<s>
+
+\2-grams:
+
+\3-grams:
+
+\end\

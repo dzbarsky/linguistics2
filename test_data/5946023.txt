@@ -1,0 +1,2 @@
+Cadence Helps Staccato to Launch Ripcord2(TM) Single-Chip, Ultra-Wideband IC Family.
+Cadence Design Systems Inc. announced that Staccato Communications utilized the Cadence(R) Low-Power Solution to achieve the aggressive power budget requirements for its 65-nanometer CMOS Ripcord2 family of WiMedia Ultra-Wideband (UWB) devices. The mixed-signal, low-power, single-chip Ripcord2 family combines digital baseband and RF technology to enable multiple protocols, including Wireless USB, High-Speed Bluetooth, wireless IP and wireless audio/video.

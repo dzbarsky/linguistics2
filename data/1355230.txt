@@ -1,0 +1,2 @@
+Brocade SilkWorm Multiprotocol Router Now Available From Fujitsu.
+Brocade Communications Systems Inc. announced that Fujitsu Limited will offer the award- winning(1) Brocade SilkWorm Multiprotocol Router as part of its ETERNUS(TM) Storage product family beginning at the end of the month. Shipping in Japan as the Fujitsu 'SN200 Model 250M,' the SAN Router enables resource sharing across SAN islands and supports streamlined data migration, backup, and recovery applications.

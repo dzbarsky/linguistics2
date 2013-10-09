@@ -1,0 +1,2 @@
+Lenovo Selects Atheros as Wireless LAN Technology Provider.
+Atheros Communications announced that Lenovo Group Limited has integrated Atheros' high-performance, single-chip 802.11g solution into new wireless-enabled laptops that will be sold in China and other markets. The chip integrates an entire 802.11g solution Media Access Controller (MAC), baseband processor, high-performance 2.4 GHz radio, and many discrete components in an integrated low-cost digital CMOS (complementary metal-oxide semiconductor) design.

@@ -1,0 +1,2 @@
+Cadence Automates Wirebonding Design for Stacked Die Packages, Design Solution Meets Need for Stacked Die in Growing System in Package Market.
+Cadence Design Systems Inc, announced new capability for designing stacked die packages, whose growing popularity is the result of manufacturers' need to increase functionality in an ever shrinking design envelope. Stacked die packages are particularly common in cell phones, digital cameras and hand held devices, which require the faster turnaround, higher levels of integration and lower costs found in system in package solutions.

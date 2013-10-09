@@ -1,0 +1,2 @@
+Illumina Launches Integrated, High-Throughput SNP Genotyping System.
+Illumina Inc. announced the launch of an internally developed, high-throughput genotyping system based on the Company's proprietary BeadArray technology. This product is based on the system that has been operational in Illumina's service business for over one year. Illumina's new genotyping system offering is an automated, LIMS-controlled system capable of delivering over one million genotypes per day and a multiplex level up to 1152 SNP loci per sample.

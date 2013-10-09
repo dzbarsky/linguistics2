@@ -1,0 +1,2 @@
+Brocade Announces SilkWorm 12000 Core Fabric Switch to Be Offered Via OEM Agreement With IBM.
+Brocade Communications Systems Inc. announced that the Brocade SilkWorm 12000 Core Fabric Switch will be offered by IBM as the IBM TotalStorage SAN Switch M12. IBM TotalStorage SAN Switch M12, available in scalable configurations from 32- to 256-ports with four switches in a single cabinet, will be available from IBM during the second quarter of 2002.

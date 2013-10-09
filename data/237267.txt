@@ -1,0 +1,2 @@
+Brocade Releases New 2 Gigabit per Second 8-Port Fabric Switch for Entry Level Storage Area Networks.
+Brocade Communications Systems Inc. (Brocade(R)) announced the general availability of the SilkWorm 3200, the industr's first 8-port, 2 Gigabit per second (Gbit/sec) intelligent fabric switch designed to meet the price and performance requirements of entry-level SANs. The SilkWorm 3200 is shipping from leading Brocade OEM and channel partners worldwide.

@@ -1,0 +1,2 @@
+Brocade Communications Systems Expands SAN Health Family of Products.
+Brocade Communications Systems Inc. announced the expansion of the Brocade SAN Health family to include the new and advanced SAN Health Professional framework and modules, as well as the new interactive SAN Health Expert consultation service. The expanded SAN Health family provides SAN administrators with highly effective tools and services for fast, easy, and comprehensive data analysis and reporting to help optimize their Brocade and McDATA SAN environments.

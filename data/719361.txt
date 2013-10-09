@@ -1,0 +1,2 @@
+Cadence Design Systems Inc. Introduces Cadence(R) Encounter(TM) Diagnostics.
+Cadence Design Systems Inc. announced Cadence(R) Encounter(TM) Diagnostics, the industry's first yield diagnostics tool. Encounter Diagnostics accelerates yield by identifying customers' most critical nanometer IC yield issues and precisely locating root cause defects. The result is higher yield in less time. The new tool supports all digital design styles and test vectors produced by all popular ATPG tools.

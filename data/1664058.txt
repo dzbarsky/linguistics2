@@ -1,0 +1,2 @@
+Brocade Communications Systems Inc. Announces Availability of New 4 Gbit/sec Switching Platforms.
+Brocade Communications Systems Inc. announced OEM availability of two extensions to its industry-leading SilkWorm(R) family of Storage Area Network (SAN) infrastructure products. Brocade is leading the industry's transition to the next generation of SAN performance with 4 Gbit/sec technology. The company was the first to ship a 4 Gbit/sec SAN switch, the SilkWorm 4100, which provides 16 to 32 ports with Ports on Demand functionality.

@@ -1,0 +1,2 @@
+Illumina Introduces SNP-Based Linkage Panel for High-Throughput Genetic Mapping.
+Illumina Inc. announced that it has developed a set of over 2,300 assayed SNP (single nucleotide polymorphism) markers that will be deployed on the Company's BeadArray platform to provide linkage analysis for genotyping service customers. The markers were assembled from the SNP Consortium (an industry partnership) panel, supplemented by new loci to provide enhanced frequency, distribution and coverage across the human genome and then optimized for accuracy and multiplex assay performance.

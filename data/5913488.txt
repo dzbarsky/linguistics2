@@ -1,0 +1,2 @@
+Cadence Design Systems Inc. Announces Availability of Software that Optimizes Custom Lithographic Source Illumination.
+Cadence Design Systems Inc. announced the availability of software that optimizes custom lithographic source illumination, a new capability in its integrated source mask optimization (SMO) technology family for IC manufacturing at 22 nanometers and beyond. Optimized custom litho source illumination delivers the superior process window and improved two-dimensional image fidelity required for 22-nanometer semiconductor manufacturing.
