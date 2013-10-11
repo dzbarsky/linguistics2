@@ -16,7 +16,7 @@ def sent_transform(sent_string):
     stemmer = PorterStemmer()
     tokens = word_tokenize(sent_string)
     tokens = [stemmer.stem(token.lower()) for token in tokens]
-    tokens = ['num' if string.translate(token, None, ",.").isdigit() else token for token in tokens]
+    tokens = ['num' if string.translate(token, None, ",.-").isdigit() else token for token in tokens]
     return tokens
 
 def make_ngram_tuples(samples, n):
@@ -60,40 +60,52 @@ class NGramModel:
     ngram_freq = dict()
     context_freq = dict()
     events = set()
+    total_freq = 0
 
-    #creates 2 dicts: one with just the context (literals before the word)
+    #initializes 2 dicts: one with just the context (literals before the word)
     #and one with the ngrams and counts their frequencies
+    #if it's the first time we see the ngram, we replace it with the '<UNK>' symbol
     #also creates a set of all seen words
     def __init__(self, trainfiles, n):
         sentences = load_collection_sentences(trainfiles, 'data')
+        #set default frequency of seeing completely unknown ngram to 1
+        self.ngram_freq['<UNK>'] = 1
         for sentence in sentences:
             l = make_ngram_tuples(sent_transform(sentence), n)
             for p in l:
+                self.total_freq += 1
                 if p in self.ngram_freq:
                     self.ngram_freq[p] += 1
                 else:
-                    self.ngram_freq[p] = 1                    
+                    #replaces first occurence of word with '<UNK>'
+                    self.ngram_freq[p] = 0
+                    self.ngram_freq['<UNK>'] += 1
                 if p[0] in self.context_freq:
                     self.context_freq[p[0]] += 1
                 else:
                     self.context_freq[p[0]] = 1
                 if p[1] not in self.events:
                     self.events.add(p[1])
-        
 
     def logprob(self, context, event):
         ngram = (context, event)
-        num = self.ngram_freq[ngram] if ngram in self.ngram_freq else 0
-        denom = self.context_freq[context] if context in self.context_freq else 0
+        if ngram in self.ngram_freq:
+            num = self.ngram_freq[ngram]
+            denom = self.context_freq[context]
+        else:
+            num = self.ngram_freq[<'UNK'>]
+            denom = self.total_freq
         prob = (float(num) + 1)/(float(denom) + len(self.events))
         return math.log(prob)
 
-    #the unsmoothed probability for each word given its context
-    def prob_unsmooth(self, context, event):
+    #the probability for each word given its context
+    #this is for random text generator purposes: if sees unknown word,
+    #then prob = 0
+    def prob_randtext(self, context, event):
         ngram = (context, event)
         num = self.ngram_freq[ngram] if ngram in self.ngram_freq else 0
-        denom = self.context_freq[context] if context in self.context_freq else len(self.events)
-        return float(num)/denom
+        denom = self.context_freq[context] if context in self.context_freq else 0
+        return float(num + 1)/(float(denom) + len(self.events))
 
     #gives the set of words in the training corpus
     def get_events(self):
@@ -111,7 +123,8 @@ def gen_rand_text(bigrammodel, n, wordlimit):
         word = ''
         for event in events:
             #for simplicity we are using an unsmoothed probability model to generate words
-            interval += bigrammodel.prob_unsmooth(context, event)
+            n = bigrammodel.prob_randtext(context, event)
+            interval += n
             #if random probability falls in the interval of word
             if interval >= prob:
                 word += event
@@ -143,12 +156,12 @@ def main():
     print make_ngram_tuples(sent_transform('She eats happily'), 2)
     trainfiles = get_all_files('data')
     model = NGramModel(trainfiles, 2)
-    print model.logprob(('h.264',), 'h.264')
-    print gen_rand_text(model, 4, 200)
-    print gen_rand_text(model, 4, 200)
-    print gen_rand_text(model, 4, 200)
-    print gen_rand_text(model, 4, 200)
-    print gen_rand_text(model, 4, 200)
+    print model.logprob(('word1',), 'word2')
+    #print gen_rand_text(model, 4, 200)
+    #print gen_rand_text(model, 4, 200)
+    #print gen_rand_text(model, 4, 200)
+    #print gen_rand_text(model, 4, 200)
+    print gen_rand_text(model, 2, 100)
 
 if __name__ == "__main__":
     main()
