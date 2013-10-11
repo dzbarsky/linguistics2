@@ -87,14 +87,13 @@ class NGramModel:
                 if p[1] not in self.events:
                     self.events.add(p[1])
 
-
     def logprob(self, context, event):
         ngram = (context, event)
         if ngram in self.ngram_freq:
             num = self.ngram_freq[ngram]
             denom = self.context_freq[context]
         else:
-            num = self.ngram_freq[<'UNK'>]
+            num = self.ngram_freq['<UNK>']
             denom = self.total_freq
         prob = (float(num) + 1)/(float(denom) + len(self.events))
         return math.log(prob)
@@ -105,8 +104,8 @@ class NGramModel:
     def prob_randtext(self, context, event):
         ngram = (context, event)
         num = self.ngram_freq[ngram] if ngram in self.ngram_freq else 0
-        denom = self.context_freq[context] if context in self.context_freq else 0
-        return float(num + 1)/(float(denom) + len(self.events))
+        denom = self.context_freq[context] if context in self.context_freq else len(self.events)
+        return float(num)/(float(denom))
 
     #gives the set of words in the training corpus
     def get_events(self):
@@ -124,7 +123,9 @@ def gen_rand_text(bigrammodel, n, wordlimit):
         word = ''
         for event in events:
             #for simplicity we are using an unsmoothed probability model to generate words
+            print (context, event)
             n = bigrammodel.prob_randtext(context, event)
+            print n
             interval += n
             #if random probability falls in the interval of word
             if interval >= prob:
