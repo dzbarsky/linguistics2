@@ -87,6 +87,7 @@ class NGramModel:
                 if p[1] not in self.events:
                     self.events.add(p[1])
 
+
     def logprob(self, context, event):
         ngram = (context, event)
         if ngram in self.ngram_freq:
