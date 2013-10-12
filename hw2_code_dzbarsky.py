@@ -53,19 +53,24 @@ def load_file_sentences(filepath):
 def load_collection_sentences(files, directory):
     sentences = []
     for file in files:
-        sentences.extend(load_file_sentences(directory + '/' + file))
+        if file.rfind('/') < 0:
+            sentences.extend(load_file_sentences(directory + '/' + file))
+        else:
+            sentences.extend(load_file_sentences(file))
     return sentences
 
 class NGramModel:
     ngram_freq = dict()
     context_freq = dict()
     events = set()
+    n = 0
 
     #initializes 2 dicts: one with just the context (literals before the word)
     #and one with the ngrams and counts their frequencies
     #if it's the first time we see a word, we replace it with the '<UNK>' symbol
     #also creates a set of all seen words
     def __init__(self, trainfiles, n):
+        self.n = n
         sentences = load_collection_sentences(trainfiles, 'data')
         self.events.add('<UNK>')
         for sentence in sentences:
@@ -91,6 +96,7 @@ class NGramModel:
                 if p[1] not in self.events:
                     self.events.add(p[1])
 
+    #gives the log probability of event|context with add1 smoothing
     def logprob(self, context, event):
         if event not in self.events:
             event = '<UNK>'
@@ -100,7 +106,7 @@ class NGramModel:
         num = self.ngram_freq[ngram] if ngram in self.ngram_freq.keys() else 0
         denom = self.context_freq[context] if context in self.context_freq.keys() else 0
         prob = (float(num) + 1)/(float(denom) + len(self.events))
-        return math.log(prob)
+        return math.log(prob, 2)
 
     #the probability for each word given its context
     #this is for random text generator purposes: it is unsmoothed
@@ -119,6 +125,31 @@ class NGramModel:
     def get_events(self):
         return self.events
 
+    #returns the log perplexity of given file
+    #this implementation assumes each sentence is independent
+    #and hence their log probabilities are added together
+    def getppl(self, testfile):
+        ppl = 0.0
+        t = 0.0
+        sentences = load_file_sentences(testfile)
+        for sentence in sentences:
+            tokens = sent_transform(sentence)
+            l = make_ngram_tuples(sentence, self.n)
+            for p in l:
+                t += 1
+                ppl += logprob(self, p[0], p[1])  
+        return math.pow(2, -ppl/t)
+'''
+def get_files_listed(corpusroot, filelist):
+    lowd = dict()
+    highd = dict()
+    files = get_all_files(corpusroot)
+    string = PlaintextCorpusReader('/', filelist).raw()
+    print string
+    return
+'''    
+
+#helper for gen_rand_text function
 def gen_rand_text_helper(bigrammodel, events, prob, context):
     interval = 0.0
     for event in events:
@@ -128,10 +159,11 @@ def gen_rand_text_helper(bigrammodel, events, prob, context):
         if interval >= prob:
             return event
 
+#generates random text given bigram model
 def gen_rand_text(bigrammodel, n, wordlimit):
     events = bigrammodel.get_events()
     string = '<s>'
-    context = ('formerli',)
+    context = ('<s>',)
     sen_num = 0
     #generates at max the word limit
     i = 0
@@ -165,7 +197,10 @@ def gen_rand_text(bigrammodel, n, wordlimit):
 
 '''
 Here are the 4 sentences randomly generated:
-<s> equiti stake in the compani initi valu avail from continu improv coffe lover the compani report second quarter end march num million , num , or $ num million with the silkworm num , inc. report with it market-lead depend on gaap net incom befor . </s> <s> all produc and chief execut director . </s> <s> updat to articl of rang of manag for evalu a quarterli cash flow . </s> <s> the brocad commun system inc. achiev book valu per dilut share on the present call . </s>
+<s> equiti stake in the compani initi valu avail from continu improv coffe lover the compani report second quarter end march num million , num , or $ num million with the silkworm num , inc. report with it market-lead depend on gaap net incom befor . </s>
+<s> all produc and chief execut director . </s>
+<s> updat to articl of rang of manag for evalu a quarterli cash flow . </s>
+<s> the brocad commun system inc. achiev book valu per dilut share on the present call . </s>
 
 '''
 
@@ -173,9 +208,10 @@ def main():
     print sent_transform('The puppy circled it 34,123.397 times.')
     print make_ngram_tuples(sent_transform('She eats happily'), 2)
     trainfiles = get_all_files('data')
-    model = NGramModel(trainfiles, 2)
-    print model.logprob(('.',), '</s>')
-    print gen_rand_text(model, 4, 200)
+    #model = NGramModel(trainfiles, 2)
+    #print model.logprob(('.',), '</s>')
+    #print gen_rand_text(model, 4, 200)
+    get_files_listed('data', 'xret_tails.txt')
 
 
 if __name__ == "__main__":
