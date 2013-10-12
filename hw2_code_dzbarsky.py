@@ -135,17 +135,16 @@ class NGramModel:
             l = make_ngram_tuples(sentence, self.n)
             for p in l:
                 t += 1
-                ppl += logprob(self, p[0], p[1])  
+                ppl += logprob(self, p[0], p[1])
         return math.pow(2, -ppl/t)
-'''
+
 def get_files_listed(corpusroot, filelist):
     lowd = dict()
     highd = dict()
     files = get_all_files(corpusroot)
-    string = PlaintextCorpusReader('/', filelist).raw()
+    string = PlaintextCorpusReader('.', filelist).raw()
     print string
     return
-'''    
 
 #helper for gen_rand_text function
 def gen_rand_text_helper(bigrammodel, events, prob, context):
@@ -203,9 +202,9 @@ Here are the 4 sentences randomly generated:
 '''
 
 def main():
-    print sent_transform('The puppy circled it 34,123.397 times.')
-    print make_ngram_tuples(sent_transform('She eats happily'), 2)
-    trainfiles = get_all_files('data')
+    #print sent_transform('The puppy circled it 34,123.397 times.')
+    #print make_ngram_tuples(sent_transform('She eats happily'), 2)
+    #trainfiles = get_all_files('data')
     #model = NGramModel(trainfiles, 2)
     #print model.logprob(('.',), '</s>')
     #print gen_rand_text(model, 4, 200)
