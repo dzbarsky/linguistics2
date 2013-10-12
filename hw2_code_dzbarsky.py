@@ -60,26 +60,30 @@ class NGramModel:
     ngram_freq = dict()
     context_freq = dict()
     events = set()
-    total_freq = 0
 
     #initializes 2 dicts: one with just the context (literals before the word)
     #and one with the ngrams and counts their frequencies
-    #if it's the first time we see the ngram, we replace it with the '<UNK>' symbol
+    #if it's the first time we see a word, we replace it with the '<UNK>' symbol
     #also creates a set of all seen words
     def __init__(self, trainfiles, n):
         sentences = load_collection_sentences(trainfiles, 'data')
-        #set default frequency of seeing completely unknown ngram to 1
-        self.ngram_freq['<UNK>'] = 1
+        self.events.add('<UNK>')
         for sentence in sentences:
-            l = make_ngram_tuples(sent_transform(sentence), n)
+            tokens = sent_transform(sentence)
+            #goes and replaces first occurence of word with <UNK>
+            #by doing it at this stage, we will not count the first
+            #occurences of <s> and </s> as <UNK>: these are just special symbols
+            #and in our opinion aren't words
+            for i in range(len(tokens)):
+                if tokens[i] not in self.events:
+                    self.events.add(tokens[i])
+                    tokens[i] = '<UNK>'
+            l = make_ngram_tuples(tokens, n)
             for p in l:
-                self.total_freq += 1
                 if p in self.ngram_freq:
                     self.ngram_freq[p] += 1
                 else:
-                    #replaces first occurence of word with '<UNK>'
-                    self.ngram_freq[p] = 0
-                    self.ngram_freq['<UNK>'] += 1
+                    self.ngram_freq[p] = 1                    
                 if p[0] in self.context_freq:
                     self.context_freq[p[0]] += 1
                 else:
@@ -88,20 +92,24 @@ class NGramModel:
                     self.events.add(p[1])
 
     def logprob(self, context, event):
+        if event not in self.events:
+            event = '<UNK>'
+        if context not in self.context_freq:
+            context = ('<UNK>',)
         ngram = (context, event)
-        if ngram in self.ngram_freq:
-            num = self.ngram_freq[ngram]
-            denom = self.context_freq[context]
-        else:
-            num = self.ngram_freq['<UNK>']
-            denom = self.total_freq
+        num = self.ngram_freq[ngram] if ngram in self.ngram_freq.keys() else 0
+        denom = self.context_freq[context] if context in self.context_freq.keys() else 0
         prob = (float(num) + 1)/(float(denom) + len(self.events))
         return math.log(prob)
 
     #the probability for each word given its context
-    #this is for random text generator purposes: if sees unknown word,
-    #then prob = 0
+    #this is for random text generator purposes: it is unsmoothed
+    #and prob is not logarithmic
     def prob_randtext(self, context, event):
+        if event not in self.events:
+            event = '<UNK>'
+        if context not in self.context_freq:
+            context = ('<UNK>',)
         ngram = (context, event)
         num = self.ngram_freq[ngram] if ngram in self.ngram_freq else 0
         denom = self.context_freq[context] if context in self.context_freq else len(self.events)
@@ -111,28 +119,36 @@ class NGramModel:
     def get_events(self):
         return self.events
 
+def gen_rand_text_helper(bigrammodel, events, prob, context):
+    interval = 0.0
+    for event in events:
+        #for simplicity we are using an unsmoothed probability model to generate words
+        interval += bigrammodel.prob_randtext(context, event)
+        #if random probability falls in the interval of word
+        if interval >= prob:
+            return event
+
 def gen_rand_text(bigrammodel, n, wordlimit):
     events = bigrammodel.get_events()
     string = '<s>'
-    context = ('<s>',)
+    context = ('formerli',)
     sen_num = 0
     #generates at max the word limit
-    for i in range(wordlimit):
+    i = 0
+    while i < wordlimit:
         prob = random.uniform(0.0,1.0)
-        interval = 0.0
-        word = ''
-        for event in events:
-            #for simplicity we are using an unsmoothed probability model to generate words
-            print (context, event)
-            n = bigrammodel.prob_randtext(context, event)
-            print n
-            interval += n
-            #if random probability falls in the interval of word
-            if interval >= prob:
-                word += event
-                break
-        string = string + ' ' + word
-        context = (word,)
+        word = gen_rand_text_helper(bigrammodel, events, prob, context)
+        #if word is <UNK> we regenerate
+        #we do not want the token <UNK> to be in our generated string
+        if word == '<UNK>':
+            i -= 1
+        else:
+            string = string + ' ' + word
+            context = (word,)
+        #if the only token given the context is <UNK>
+        #we regenerate a new token given the context <UNK>
+        if bigrammodel.prob_randtext(context, '<UNK>') == 1:
+            context = ('<UNK>',)
         #if it's the end of a sentence
         if word == '</s>':
             sen_num += 1
@@ -142,14 +158,14 @@ def gen_rand_text(bigrammodel, n, wordlimit):
             else:
                 string = string + ' <s>'
                 context = ('<s>',)
-                i += 1
+                i = i + 1
+        i += 1
 
     return string
 
 '''
 Here are the 4 sentences randomly generated:
-<s> kraus to common stock split , num earn guidanc for the troubl asset . </s> <s> patsi bate switch for the compani report record gross sale of num '' </s> <s> the physic or $ num and local coffe team access to offer enhanc the third and the third quarter of ceo ) , comput with support the five sharehold who will report earn call . </s> <s> cole as much more energi effici , num . </s>
-<s> the compani . </s> <s> `` starbuck corp. report earn guidanc for ak steel hold corp. ad to num . </s> <s> develop of $ num . </s> <s> for the quarter num million . </s>
+<s> equiti stake in the compani initi valu avail from continu improv coffe lover the compani report second quarter end march num million , num , or $ num million with the silkworm num , inc. report with it market-lead depend on gaap net incom befor . </s> <s> all produc and chief execut director . </s> <s> updat to articl of rang of manag for evalu a quarterli cash flow . </s> <s> the brocad commun system inc. achiev book valu per dilut share on the present call . </s>
 
 '''
 
@@ -158,12 +174,9 @@ def main():
     print make_ngram_tuples(sent_transform('She eats happily'), 2)
     trainfiles = get_all_files('data')
     model = NGramModel(trainfiles, 2)
-    print model.logprob(('word1',), 'word2')
-    #print gen_rand_text(model, 4, 200)
-    #print gen_rand_text(model, 4, 200)
-    #print gen_rand_text(model, 4, 200)
-    #print gen_rand_text(model, 4, 200)
-    print gen_rand_text(model, 2, 100)
+    print model.logprob(('.',), '</s>')
+    print gen_rand_text(model, 4, 200)
+
 
 if __name__ == "__main__":
     main()
