@@ -7,6 +7,7 @@ from nltk.stem.porter import PorterStemmer
 import math
 import string
 import random
+import fileinput
 
 '''
 homework 2 by David Zbarsky and Yaou Wang
@@ -135,16 +136,8 @@ class NGramModel:
             l = make_ngram_tuples(sentence, self.n)
             for p in l:
                 t += 1
-                ppl += logprob(self, p[0], p[1])
+                ppl += self.logprob(p[0], p[1])
         return math.pow(2, -ppl/t)
-
-def get_files_listed(corpusroot, filelist):
-    lowd = dict()
-    highd = dict()
-    files = get_all_files(corpusroot)
-    string = PlaintextCorpusReader('.', filelist).raw()
-    print string
-    return
 
 #helper for gen_rand_text function
 def gen_rand_text_helper(bigrammodel, events, prob, context):
@@ -201,6 +194,79 @@ Here are the 4 sentences randomly generated:
 
 '''
 
+def get_files_listed(corpusroot, filelist):
+    lowd = dict()
+    highd = dict()
+    files = get_all_files(corpusroot)
+    index = filelist.rfind('/')
+    if index < 0:
+        tokens = word_tokenize(PlaintextCorpusReader('.', filelist).raw())
+    else:
+        tokens = word_tokenize(PlaintextCorpusReader(filelist[:index], filelist[index+1:]).raw())
+    i = 0
+    while i < len(tokens):
+        if float(tokens[i+1]) < 5.0 and tokens[i] in files:
+            lowd[tokens[i]] = float(tokens[i+1])
+        if float(tokens[i+1]) > 5.0 and tokens[i] in files:
+            highd[tokens[i]] = float(tokens[i+1])
+        i += 2
+    
+    return (lowd, highd)
+
+def lm_predict(trainfileshigh, trainfileslow, testfiledict):
+    results_high = set()
+    bench_high = set()
+    results_low  = set()
+    bench_low = set()
+    lm_high = NGramModel(trainfileshigh, 2)
+    lm_low = NGramModel(trainfileslow, 2)
+    for testfile in testfiledict.keys():
+        if testfile.rfind('/') < 0:
+            p_high = lm_high.getppl('test_data/' + testfile)
+            p_low = lm_low.getppl('test_data/' + testfile)
+        else:
+            p_high = lm_high.getppl(testfile)
+            p_low = lm_low.getppl(testfile)
+        if p_low < p_high:
+            results_low.add(testfile)
+        else:
+            results_high.add(testfile)
+        if testfiledict[testfile] > 0.0:
+            bench_high.add(testfile)
+        else:
+            bench_low.add(testfile)
+    print lm_predict_merged(lm_high, lm_low, 'merged_high.txt', 'merged_low.txt')
+    pres = len(results_high.intersection(bench_high))/float(len(results_high))
+    recall = len(results_high.intersection(bench_high))/float(len(bench_high))
+    accu = (len(results_high.intersection(bench_high))+len(results_low.intersection(bench_low)))/float(len(results_high)+len(results_low))
+    return (pres, recall, accu)
+
+#helper to merge the high/low files into one file each
+def merge_files(fileshigh, fileslow, testfilehigh, testfilelow):
+    with open(testfilehigh, 'w') as outfile:
+        for testfile in fileshigh:
+            with open('test_data/' + testfile) as infile:
+                for line in infile:
+                    outfile.write(line)
+    with open(testfilelow, 'w') as outfile:
+        for testfile in fileslow:
+            with open('test_data/' + testfile) as infile:
+                for line in infile:
+                    outfile.write(line)
+
+
+def lm_predict_merged(lm_high, lm_low, testfilehigh, testfilelow):
+    accuracy = 0.0
+    p_high1 = lm_high.getppl(testfilehigh)
+    p_low1 = lm_low.getppl(testfilehigh)
+    p_high2 = lm_high.getppl(testfilelow)
+    p_low2 = lm_low.getppl(testfilelow)
+    if p_high1 < p_low1:
+        accuracy += 0.5
+    if p_low2 < p_high2:
+        accuracy += 0.5
+    return accuracy
+
 def main():
     #print sent_transform('The puppy circled it 34,123.397 times.')
     #print make_ngram_tuples(sent_transform('She eats happily'), 2)
@@ -208,7 +274,14 @@ def main():
     #model = NGramModel(trainfiles, 2)
     #print model.logprob(('.',), '</s>')
     #print gen_rand_text(model, 4, 200)
-    get_files_listed('data', 'xret_tails.txt')
+    lowd, highd = get_files_listed('data', 'xret_tails.txt')
+    trainfileshigh = highd.keys()
+    trainfileslow = lowd.keys()
+    ld, hd = get_files_listed('test_data', 'xret_tails.txt')
+    #merge_files(hd.keys(), ld.keys(), 'merged_high.txt', 'merged_low.txt')
+    ld.update(hd)
+    testfiledict = ld
+    print lm_predict(trainfileshigh, trainfileslow, testfiledict)
 
 
 if __name__ == "__main__":
