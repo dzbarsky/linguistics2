@@ -100,8 +100,6 @@ class NGramModel:
     def logprob(self, context, event):
         if event not in self.events:
             event = '<UNK>'
-        if context not in self.context_freq:
-            context = ('<UNK>',)
         ngram = (context, event)
         num = self.ngram_freq[ngram] if ngram in self.ngram_freq.keys() else 0
         denom = self.context_freq[context] if context in self.context_freq.keys() else 0
