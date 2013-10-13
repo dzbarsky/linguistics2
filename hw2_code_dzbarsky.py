@@ -386,6 +386,8 @@ def get_top_unigrams(lm_file, t):
     return [x[1] for x in words[:t]]
 
 '''
+2.2.5
+
   Here are the top unigrams for the language model trained on high return files:
   ['the', 'of', 'to', 'and', 'for', 'a', 'in', '</s>', 'million', 'Inc.', 'per', 'on',
   'or', 'quarter', 'that', 'share', 'will', 'from', 'net', 'income', 'announced', 'as', 
@@ -416,7 +418,18 @@ def get_lm_ranking(lm_file_list, test_text_file):
   
     lms.sort(key=lambda x:x[0])
     return [x[1] for x in lms]
-        
+
+'''
+2.3.2
+
+  Here is the sorted list of language models from best to worst (smallest to highest perplexivity):
+  ['lm_interpolated', 'lm_discount_3', 'lm_default_3', 'lm_discount_2', 'lm_default_2', 'lm_default_1',
+  'lm_discount_1', 'lm_laplace_1', 'lm_laplace_2', 'lm_laplace_3']
+  This shows that the 3-gram models are the best. Further, the Ney’s absolute discounting with interpolation
+  smoothing method is the best and the Laplace smoothing method is the worst. 
+
+'''
+
 def main():
     #print sent_transform('The puppy circled it 34,123.397 times.')
     #print make_ngram_tuples(sent_transform('She eats happily'), 2)
@@ -444,21 +457,13 @@ def main():
     #print srilm_predict('highd_lm', 'lowd_lm', testfileshigh, testfileslow)
     #print srilm_predict_merged('highd_lm', 'lowd_lm', './merged_high.txt', './merged_low.txt')
     #print get_top_unigrams('highd_lm', 50)
-    '''
-['the', 'of', 'to', 'and', 'for', 'a', 'in', '</s>', 'million', 'Inc.', 'per', 'on', 'or', 'quarter', 'that', 'share', 'will', 'from', 'net', 'income', 'announced', 'as', 'diluted', 'with', 'company', 'Earnings', 'reported', 'was', 'year', 'earnings', 'Corp.', 'is', 'its', 'compared', 'has', 'million,', 'first', 'by', 'an', 'at', 'ended', 'results', 'Quarter', 'Communications', 'Results', 'be', 'Corporation', 'period', '2008', 'revenue']
-    '''
     #print get_top_unigrams('lowd_lm', 50)
-    '''
-['the', 'of', 'to', 'and', 'for', 'in', 'a', '</s>', 'million', 'Inc.', 'on', 'per', 'quarter', 'or', 'share', 'income', 'net', 'that', 'from', 'will', 'company', 'diluted', 'announced', 'reported', 'its', 'with', 'Earnings', 'earnings', 'as', 'was', 'million,', 'Corp.', 'year', 'is', 'has', 'compared', 'an', 'period', 'by', 'Quarter', 'be', 'ended', 'results', 'Communications', 'Results', 'same', 'at', 'Corporation', 'first', '30,']
-    '''
-
     #print srilm_predict_merged('highd_lm', 'lowd_lm', './merged_high.txt', './merged_low.txt')
     #l1 = get_top_unigrams('highd_lm', 50)
     #l2 = get_top_unigrams('lowd_lm', 50)
     #print l1
     #print l2
-    #print len(set(l1).intersection(set(l2)))
-    
+    #print len(set(l1).intersection(set(l2)))    
     #for order in range(3):
     #    num = str(order + 1)
     #    print num
