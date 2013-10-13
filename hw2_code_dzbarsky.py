@@ -9,6 +9,8 @@ import string
 import random
 import fileinput
 import os
+import itertools
+import subprocess
 
 '''
 homework 2 by David Zbarsky and Yaou Wang
@@ -308,21 +310,22 @@ def gen_lm_from_file(input, output):
 
 def srilm_predict(lmfilehigh, lmfilelow, testfileshigh, testfileslow):
     results_high = set()
-    bench_high = set()
+    bench_high = testfileshigh 
     results_low  = set()
-    bench_low = set()
+    bench_low = testfileslow
 
-    for testfile in testfiledict.keys():
-        p_high = os.system('NGRAM_LOC -lm ' + highd_lm + ' -ppl test_data/' + testfile)
-        p_low = os.system('NGRAM_LOC -lm ' + lowd_lm + ' -ppl test_data/' + testfile)
+    for testfile in itertools.chain(testfileshigh, testfileslow):
+	p_high = subprocess.check_output(["srilm/ngram", "-lm", lmfilehigh, "-ppl", 'test_data/' + testfile])
+	p_low = subprocess.check_output(["srilm/ngram", "-lm", lmfilelow, "-ppl", 'test_data/' + testfile])
+
+        p_high = p_high[p_high.find('ppl') + 5:]
+        p_high = float(p_high[:p_high.find(' ')])
+        p_low = p_low[p_low.find('ppl') + 5:]
+        p_low = float(p_low[:p_low.find(' ')])
         if p_low < p_high:
             results_low.add(testfile)
         else:
             results_high.add(testfile)
-        if testfiledict[testfile] > 0.0:
-            bench_high.add(testfile)
-        else:
-            bench_low.add(testfile)
     #we evaluate the big merged text here since the models have already been built in this function
     pres = len(results_high.intersection(bench_high))/float(len(results_high))
     recall = len(results_high.intersection(bench_high))/float(len(bench_high))
@@ -341,6 +344,8 @@ def main():
     trainfileshigh = highd.keys()
     trainfileslow = lowd.keys()
     ld, hd = get_files_listed('test_data', 'xret_tails.txt')
+    testfileslow = set(ld.keys())
+    testfileshigh = set(hd.keys())
     #merge_files(hd.keys(), ld.keys(), 'merged_high.txt', 'merged_low.txt')
     ld.update(hd)
     testfiledict = ld
@@ -352,7 +357,7 @@ def main():
     #    print_sentences_from_files(['test_data/' + file], 'srilm/' + file)
     #gen_lm_from_file('all_highd.txt', 'highd_lm')
     #gen_lm_from_file('all_lowd.txt', 'lowd_lm')
-    print srilm_predict(trainfileshigh, trainfileslow, testfiledict)
+    print srilm_predict('highd_lm', 'lowd_lm', testfileshigh, testfileslow)
 
 
 
