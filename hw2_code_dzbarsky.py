@@ -8,6 +8,7 @@ import math
 import string
 import random
 import fileinput
+import os
 
 '''
 homework 2 by David Zbarsky and Yaou Wang
@@ -274,6 +275,12 @@ def print_sentences_from_files(file_names, outfilename):
             outfile.write(sentence)
 
 
+def gen_lm_from_file(input, output):
+    os.system('srilm/ngram-count -text ' + input + ' -lm ' + output)
+
+#def srilm predict(lmfilehigh, lmfilelow, testfileshigh, testfileslow):
+
+
 def main():
     #print sent_transform('The puppy circled it 34,123.397 times.')
     #print make_ngram_tuples(sent_transform('She eats happily'), 2)
@@ -291,9 +298,11 @@ def main():
     #print lm_predict(trainfileshigh, trainfileslow, testfiledict)
     #print_sentences_from_files(trainfileshigh, 'all_highd.txt')
     #print_sentences_from_files(trainfileslow, 'all_lowd.txt')
-    for file in get_all_files('test_data'):
-        print file
-        print_sentences_from_files(['test_data/' + file], 'SRILM/' + file)
+    #for file in get_all_files('test_data'):
+    #    print file
+    #    print_sentences_from_files(['test_data/' + file], 'SRILM/' + file)
+    gen_lm_from_file('all_highd.txt', 'highd_lm')
+    gen_lm_from_file('all_lowd.txt', 'lowd_lm')
 
 
 
