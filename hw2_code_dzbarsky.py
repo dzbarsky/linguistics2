@@ -385,6 +385,17 @@ def get_top_unigrams(lm_file, t):
     words.sort(key=lambda x: x[0])
     return [x[1] for x in words[:t]]
 
+def get_lm_ranking(lm_file_list, test_text_file):
+    lms = []
+    for lm in lm_file_list:
+	p_high = subprocess.check_output(["srilm/ngram", "-lm", lm, "-ppl", test_text_file])
+        p_high = p_high[p_high.find('ppl') + 5:]
+        p_high = float(p_high[:p_high.find(' ')])
+        lms.append((p_high, lm))
+  
+    lms.sort(key=lambda x:x[0])
+    return [x[1] for x in lms]
+        
 def main():
     #print sent_transform('The puppy circled it 34,123.397 times.')
     #print make_ngram_tuples(sent_transform('She eats happily'), 2)
@@ -395,9 +406,9 @@ def main():
     #lowd, highd = get_files_listed('data', 'xret_tails.txt')
     #trainfileshigh = highd.keys()
     #trainfileslow = lowd.keys()
-    #ld, hd = get_files_listed('test_data', 'xret_tails.txt')
-    #testfileslow = set(ld.keys())
-    #testfileshigh = set(hd.keys())
+    ld, hd = get_files_listed('test_data', 'xret_tails.txt')
+    testfileslow = set(ld.keys())
+    testfileshigh = set(hd.keys())
     #merge_files(hd.keys(), ld.keys(), 'merged_high.txt', 'merged_low.txt')
     #ld.update(hd)
     #testfiledict = ld
@@ -409,22 +420,29 @@ def main():
     #    print_sentences_from_files(['test_data/' + file], 'srilm/' + file)
     #gen_lm_from_file('all_highd.txt', 'highd_lm')
     #gen_lm_from_file('all_lowd.txt', 'lowd_lm')
-<<<<<<< HEAD
     #print srilm_predict('highd_lm', 'lowd_lm', testfileshigh, testfileslow)
-    print get_top_unigrams('highd_lm', 50)
+    #print srilm_predict('highd_lm', 'lowd_lm', testfileshigh, testfileslow)
+    #print srilm_predict_merged('highd_lm', 'lowd_lm', './merged_high.txt', './merged_low.txt')
+    #print get_top_unigrams('highd_lm', 50)
     '''
 ['the', 'of', 'to', 'and', 'for', 'a', 'in', '</s>', 'million', 'Inc.', 'per', 'on', 'or', 'quarter', 'that', 'share', 'will', 'from', 'net', 'income', 'announced', 'as', 'diluted', 'with', 'company', 'Earnings', 'reported', 'was', 'year', 'earnings', 'Corp.', 'is', 'its', 'compared', 'has', 'million,', 'first', 'by', 'an', 'at', 'ended', 'results', 'Quarter', 'Communications', 'Results', 'be', 'Corporation', 'period', '2008', 'revenue']
     '''
-    print get_top_unigrams('lowd_lm', 50)
+    #print get_top_unigrams('lowd_lm', 50)
     '''
 ['the', 'of', 'to', 'and', 'for', 'in', 'a', '</s>', 'million', 'Inc.', 'on', 'per', 'quarter', 'or', 'share', 'income', 'net', 'that', 'from', 'will', 'company', 'diluted', 'announced', 'reported', 'its', 'with', 'Earnings', 'earnings', 'as', 'was', 'million,', 'Corp.', 'year', 'is', 'has', 'compared', 'an', 'period', 'by', 'Quarter', 'be', 'ended', 'results', 'Communications', 'Results', 'same', 'at', 'Corporation', 'first', '30,']
     '''
 
-=======
-    print srilm_predict('highd_lm', 'lowd_lm', testfileshigh, testfileslow)
-    print srilm_predict_merged('highd_lm', 'lowd_lm', './merged_high.txt', './merged_low.txt')
->>>>>>> a6b37bf7955c0ce1e752650e22730297b73a5406
+    #for order in range(3):
+    #    num = str(order + 1)
+    #    print num
+    #    os.system('srilm/ngram-count -text all_highd.txt -order ' + num + ' -lm lm_default_' + num)
+    #    os.system('srilm/ngram-count -text all_highd.txt -addsmooth 1 -order ' + num + ' -lm lm_laplace_' + num)
+    #    os.system('srilm/ngram-count -text all_highd.txt -cdiscount 0.75 -order ' + num + ' -lm lm_discount_' + num)
 
+    #os.system('srilm/ngram-count -text all_highd.txt -cdiscount 0.75 -interpolate -order 3 -lm lm_interpolated')
+
+    lms = ['lm_default_1', 'lm_default_2', 'lm_default_3', 'lm_discount_1', 'lm_discount_2', 'lm_discount_3', 'lm_interpolated', 'lm_laplace_1', 'lm_laplace_2', 'lm_laplace_3']
+    print get_lm_ranking(lms, 'all_highd.txt')
 
 if __name__ == "__main__":
     main()
