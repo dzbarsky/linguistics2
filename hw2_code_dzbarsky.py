@@ -326,12 +326,36 @@ def srilm_predict(lmfilehigh, lmfilelow, testfileshigh, testfileslow):
             results_low.add(testfile)
         else:
             results_high.add(testfile)
-    #we evaluate the big merged text here since the models have already been built in this function
+    
     pres = len(results_high.intersection(bench_high))/float(len(results_high))
     recall = len(results_high.intersection(bench_high))/float(len(bench_high))
     accu = (len(results_high.intersection(bench_high))+len(results_low.intersection(bench_low)))/float(len(results_high)+len(results_low))
     return (pres, recall, accu)
 
+def srilm_predict_merged(lm_high, lm_low, testfilehigh, testfilelow):
+    accuracy = 0.0
+    p_high1 = subprocess.check_output(["srilm/ngram", "-lm", lm_high, "-ppl", testfilehigh])
+    p_low1 = subprocess.check_output(["srilm/ngram", "-lm", lm_low, "-ppl", testfilehigh])
+
+    p_high1 = p_high1[p_high1.find('ppl') + 5:]
+    p_high1 = float(p_high1[:p_high1.find(' ')])
+    p_low1 = p_low1[p_low1.find('ppl') + 5:]
+    p_low1 = float(p_low1[:p_low1.find(' ')])
+
+    p_high2 = subprocess.check_output(["srilm/ngram", "-lm", lm_high, "-ppl", testfilelow])
+    p_low2 = subprocess.check_output(["srilm/ngram", "-lm", lm_low, "-ppl", testfilelow])
+
+    p_high2 = p_high2[p_high2.find('ppl') + 5:]
+    p_high2 = float(p_high2[:p_high2.find(' ')])
+    p_low2 = p_low2[p_low2.find('ppl') + 5:]
+    p_low2 = float(p_low2[:p_low2.find(' ')])
+    
+    if p_high1 < p_low1:
+        accuracy += 0.5
+    if p_low2 < p_high2:
+        accuracy += 0.5
+
+    return accuracy
 
 def main():
     #print sent_transform('The puppy circled it 34,123.397 times.')
@@ -358,7 +382,7 @@ def main():
     #gen_lm_from_file('all_highd.txt', 'highd_lm')
     #gen_lm_from_file('all_lowd.txt', 'lowd_lm')
     print srilm_predict('highd_lm', 'lowd_lm', testfileshigh, testfileslow)
-
+    print srilm_predict_merged('highd_lm', 'lowd_lm', './merged_high.txt', './merged_low.txt')
 
 
 if __name__ == "__main__":
