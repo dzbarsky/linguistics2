@@ -113,7 +113,8 @@ class NGramModel:
     def prob_randtext(self, context, event):
         if event not in self.events:
             event = '<UNK>'
-        if context not in self.context_freq:
+        #this change only deals with unknown context for bigrams
+        if context not in self.context_freq.keys():
             context = ('<UNK>',)
         ngram = (context, event)
         num = self.ngram_freq[ngram] if ngram in self.ngram_freq else 0
@@ -133,7 +134,7 @@ class NGramModel:
         sentences = load_file_sentences(testfile)
         for sentence in sentences:
             tokens = sent_transform(sentence)
-            l = make_ngram_tuples(sentence, self.n)
+            l = make_ngram_tuples(tokens, self.n)
             for p in l:
                 t += 1
                 ppl += self.logprob(p[0], p[1])
@@ -205,9 +206,9 @@ def get_files_listed(corpusroot, filelist):
         tokens = word_tokenize(PlaintextCorpusReader(filelist[:index], filelist[index+1:]).raw())
     i = 0
     while i < len(tokens):
-        if float(tokens[i+1]) < 5.0 and tokens[i] in files:
+        if float(tokens[i+1]) <= 5.0 and tokens[i] in files:
             lowd[tokens[i]] = float(tokens[i+1])
-        if float(tokens[i+1]) > 5.0 and tokens[i] in files:
+        if float(tokens[i+1]) >= 5.0 and tokens[i] in files:
             highd[tokens[i]] = float(tokens[i+1])
         i += 2
 
@@ -236,7 +237,8 @@ def lm_predict(trainfileshigh, trainfileslow, testfiledict):
             bench_high.add(testfile)
         else:
             bench_low.add(testfile)
-    #print lm_predict_merged(lm_high, lm_low, 'merged_high.txt', 'merged_low.txt')
+    #we evaluate the big merged text here since the models have already been built in this function
+    print 'merged texts evaluation accuracy =' + str(lm_predict_merged(lm_high, lm_low, './merged_high.txt', './merged_low.txt'))
     pres = len(results_high.intersection(bench_high))/float(len(results_high))
     recall = len(results_high.intersection(bench_high))/float(len(bench_high))
     accu = (len(results_high.intersection(bench_high))+len(results_low.intersection(bench_low)))/float(len(results_high)+len(results_low))
@@ -267,6 +269,26 @@ def lm_predict_merged(lm_high, lm_low, testfilehigh, testfilelow):
     if p_low2 < p_high2:
         accuracy += 0.5
     return accuracy
+
+'''
+On evaluation of our language model:
+  We found that our language model is not very accurate in terms of predicting high vs. low returns.
+  The precision, recall, accuracy values work out to be (0.54, 0.54, 0.54), which are only a little
+  bit better than random chance. Fundamentally, this is because of data sparsity. We have many cases
+  where the context or event has never been seen before by the models. Curiously, if we eliminate the
+  <UNK> substitution (deleting the following in the logprob function:
+         if event not in self.events:
+            event = '<UNK>')
+  the precision, recall, accuracy increases to (0.589, 0.66, 0.60). This suggests that rather than
+  guessing occurences of <UNK> words it would be better to just assign unknown words the probability
+  of chance. However, the fact that changing the implementation of seeing the unknown word changes
+  the probability is also a reflection of how sparse our data is.
+
+  On testing the merged texts, we are able to arrive at an accuracy of 1.0. This shows that if the test
+  file is long enough, then there are enough clues for our language models to pick up to accurately predict
+  the file's associated returns.
+
+'''
 
 def main():
     #print sent_transform('The puppy circled it 34,123.397 times.')
