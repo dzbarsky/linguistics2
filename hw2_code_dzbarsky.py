@@ -332,6 +332,23 @@ def srilm_predict(lmfilehigh, lmfilelow, testfileshigh, testfileslow):
     accu = (len(results_high.intersection(bench_high))+len(results_low.intersection(bench_low)))/float(len(results_high)+len(results_low))
     return (pres, recall, accu)
 
+def get_top_unigrams(lm_file, t):
+    words = []
+    with open(lm_file) as lm:
+        for i in range(3):
+            line = lm.readline()
+        count = int(line[line.find('=') + 1:])
+        for i in range(4):
+            lm.readline()
+        for i in range(count):
+            line = lm.readline()
+            prob = line[0:line.find('\t')]
+            line = line[line.find('\t') + 1:]
+            word = line[0:line.find('\t')]
+            words.append((prob, word))
+        lm.close()
+    words.sort(key=lambda x: x[0])
+    return [x[1] for x in words[:t]]
 
 def main():
     #print sent_transform('The puppy circled it 34,123.397 times.')
@@ -340,15 +357,15 @@ def main():
     #model = NGramModel(trainfiles, 2)
     #print model.logprob(('.',), '</s>')
     #print gen_rand_text(model, 4, 200)
-    lowd, highd = get_files_listed('data', 'xret_tails.txt')
-    trainfileshigh = highd.keys()
-    trainfileslow = lowd.keys()
-    ld, hd = get_files_listed('test_data', 'xret_tails.txt')
-    testfileslow = set(ld.keys())
-    testfileshigh = set(hd.keys())
+    #lowd, highd = get_files_listed('data', 'xret_tails.txt')
+    #trainfileshigh = highd.keys()
+    #trainfileslow = lowd.keys()
+    #ld, hd = get_files_listed('test_data', 'xret_tails.txt')
+    #testfileslow = set(ld.keys())
+    #testfileshigh = set(hd.keys())
     #merge_files(hd.keys(), ld.keys(), 'merged_high.txt', 'merged_low.txt')
-    ld.update(hd)
-    testfiledict = ld
+    #ld.update(hd)
+    #testfiledict = ld
     #print lm_predict(trainfileshigh, trainfileslow, testfiledict)
     #print_sentences_from_files(trainfileshigh, 'all_highd.txt')
     #print_sentences_from_files(trainfileslow, 'all_lowd.txt')
@@ -357,7 +374,15 @@ def main():
     #    print_sentences_from_files(['test_data/' + file], 'srilm/' + file)
     #gen_lm_from_file('all_highd.txt', 'highd_lm')
     #gen_lm_from_file('all_lowd.txt', 'lowd_lm')
-    print srilm_predict('highd_lm', 'lowd_lm', testfileshigh, testfileslow)
+    #print srilm_predict('highd_lm', 'lowd_lm', testfileshigh, testfileslow)
+    print get_top_unigrams('highd_lm', 50)
+    '''
+['the', 'of', 'to', 'and', 'for', 'a', 'in', '</s>', 'million', 'Inc.', 'per', 'on', 'or', 'quarter', 'that', 'share', 'will', 'from', 'net', 'income', 'announced', 'as', 'diluted', 'with', 'company', 'Earnings', 'reported', 'was', 'year', 'earnings', 'Corp.', 'is', 'its', 'compared', 'has', 'million,', 'first', 'by', 'an', 'at', 'ended', 'results', 'Quarter', 'Communications', 'Results', 'be', 'Corporation', 'period', '2008', 'revenue']
+    '''
+    print get_top_unigrams('lowd_lm', 50)
+    '''
+['the', 'of', 'to', 'and', 'for', 'in', 'a', '</s>', 'million', 'Inc.', 'on', 'per', 'quarter', 'or', 'share', 'income', 'net', 'that', 'from', 'will', 'company', 'diluted', 'announced', 'reported', 'its', 'with', 'Earnings', 'earnings', 'as', 'was', 'million,', 'Corp.', 'year', 'is', 'has', 'compared', 'an', 'period', 'by', 'Quarter', 'be', 'ended', 'results', 'Communications', 'Results', 'same', 'at', 'Corporation', 'first', '30,']
+    '''
 
 
 
