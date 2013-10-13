@@ -322,7 +322,7 @@ def main():
     #print_sentences_from_files(trainfileslow, 'all_lowd.txt')
     #for file in get_all_files('test_data'):
     #    print file
-    #    print_sentences_from_files(['test_data/' + file], 'SRILM/' + file)
+    #    print_sentences_from_files(['test_data/' + file], 'srilm/' + file)
     gen_lm_from_file('all_highd.txt', 'highd_lm')
     gen_lm_from_file('all_lowd.txt', 'lowd_lm')
 
