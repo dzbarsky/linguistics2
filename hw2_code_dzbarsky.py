@@ -14,6 +14,7 @@ import os
 homework 2 by David Zbarsky and Yaou Wang
 '''
 
+#stems the sentences and replaces numbers with token <num>
 def sent_transform(sent_string):
     stemmer = PorterStemmer()
     tokens = word_tokenize(sent_string)
@@ -21,6 +22,7 @@ def sent_transform(sent_string):
     tokens = ['num' if string.translate(token, None, ",.-").isdigit() else token for token in tokens]
     return tokens
 
+#makes tuples of n-grams given the samples
 def make_ngram_tuples(samples, n):
     ngrams = []
     for i in range(len(samples)+1):
@@ -195,6 +197,8 @@ Here are the 4 sentences randomly generated:
 
 '''
 
+#uses filelist to group and divide the appropriate files
+#in corpusroot
 def get_files_listed(corpusroot, filelist):
     lowd = dict()
     highd = dict()
@@ -214,6 +218,8 @@ def get_files_listed(corpusroot, filelist):
 
     return (lowd, highd)
 
+#takes two sets of training files and generates two language models
+#to predict the grouping of files in testfiledict
 def lm_predict(trainfileshigh, trainfileslow, testfiledict):
     results_high = set()
     bench_high = set()
@@ -237,7 +243,7 @@ def lm_predict(trainfileshigh, trainfileslow, testfiledict):
             bench_high.add(testfile)
         else:
             bench_low.add(testfile)
-    #we evaluate the big merged text here since the models have already been built in this function
+    #we evaluate the big merged text here since the language models have already been built in this function
     print 'merged texts evaluation accuracy =' + str(lm_predict_merged(lm_high, lm_low, './merged_high.txt', './merged_low.txt'))
     pres = len(results_high.intersection(bench_high))/float(len(results_high))
     recall = len(results_high.intersection(bench_high))/float(len(bench_high))
@@ -257,7 +263,7 @@ def merge_files(fileshigh, fileslow, testfilehigh, testfilelow):
                 for line in infile:
                     outfile.write(line)
 
-
+#function for evaluating the two merged files
 def lm_predict_merged(lm_high, lm_low, testfilehigh, testfilelow):
     accuracy = 0.0
     p_high1 = lm_high.getppl(testfilehigh)
