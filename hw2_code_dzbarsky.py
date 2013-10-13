@@ -61,18 +61,18 @@ def load_collection_sentences(files, directory):
     return sentences
 
 class NGramModel:
-    ngram_freq = dict()
-    context_freq = dict()
-    events = set()
-    n = 0
 
     #initializes 2 dicts: one with just the context (literals before the word)
     #and one with the ngrams and counts their frequencies
     #if it's the first time we see a word, we replace it with the '<UNK>' symbol
     #also creates a set of all seen words
     def __init__(self, trainfiles, n):
+        self.ngram_freq = dict()
+        self.context_freq = dict()
+        self.events = set()
         self.n = n
         sentences = load_collection_sentences(trainfiles, 'data')
+        self.sentences = sentences
         self.events.add('<UNK>')
         for sentence in sentences:
             tokens = sent_transform(sentence)
@@ -89,7 +89,7 @@ class NGramModel:
                 if p in self.ngram_freq:
                     self.ngram_freq[p] += 1
                 else:
-                    self.ngram_freq[p] = 1                    
+                    self.ngram_freq[p] = 1
                 if p[0] in self.context_freq:
                     self.context_freq[p[0]] += 1
                 else:
@@ -210,7 +210,7 @@ def get_files_listed(corpusroot, filelist):
         if float(tokens[i+1]) > 5.0 and tokens[i] in files:
             highd[tokens[i]] = float(tokens[i+1])
         i += 2
-    
+
     return (lowd, highd)
 
 def lm_predict(trainfileshigh, trainfileslow, testfiledict):
@@ -220,6 +220,7 @@ def lm_predict(trainfileshigh, trainfileslow, testfiledict):
     bench_low = set()
     lm_high = NGramModel(trainfileshigh, 2)
     lm_low = NGramModel(trainfileslow, 2)
+
     for testfile in testfiledict.keys():
         if testfile.rfind('/') < 0:
             p_high = lm_high.getppl('test_data/' + testfile)
@@ -235,7 +236,7 @@ def lm_predict(trainfileshigh, trainfileslow, testfiledict):
             bench_high.add(testfile)
         else:
             bench_low.add(testfile)
-    print lm_predict_merged(lm_high, lm_low, 'merged_high.txt', 'merged_low.txt')
+    #print lm_predict_merged(lm_high, lm_low, 'merged_high.txt', 'merged_low.txt')
     pres = len(results_high.intersection(bench_high))/float(len(results_high))
     recall = len(results_high.intersection(bench_high))/float(len(bench_high))
     accu = (len(results_high.intersection(bench_high))+len(results_low.intersection(bench_low)))/float(len(results_high)+len(results_low))
