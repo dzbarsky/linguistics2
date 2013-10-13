@@ -278,26 +278,6 @@ def lm_predict_merged(lm_high, lm_low, testfilehigh, testfilelow):
         accuracy += 0.5
     return accuracy
 
-'''
-On evaluation of our language model:
-  We found that our language model is not very accurate in terms of predicting high vs. low returns.
-  The precision, recall, accuracy values work out to be (0.54, 0.54, 0.54), which are only a little
-  bit better than random chance. Fundamentally, this is because of data sparsity. We have many cases
-  where the context or event has never been seen before by the models. Curiously, if we eliminate the
-  <UNK> substitution (deleting the following in the logprob function:
-         if event not in self.events:
-            event = '<UNK>')
-  the precision, recall, accuracy increases to (0.589, 0.66, 0.60). This suggests that rather than
-  guessing occurences of <UNK> words it would be better to just assign unknown words the probability
-  of chance. However, the fact that changing the implementation of seeing the unknown word changes
-  the probability is also a reflection of how sparse our data is.
-
-  On testing the merged texts, we are able to arrive at an accuracy of 1.0. This shows that if the test
-  file is long enough, then there are enough clues for our language models to pick up to accurately predict
-  the file's associated returns.
-
-'''
-
 def print_sentences_from_files(file_names, outfilename):
     sentences = load_collection_sentences(file_names, 'data')
     with open(outfilename, 'w') as outfile:
@@ -356,6 +336,36 @@ def srilm_predict_merged(lm_high, lm_low, testfilehigh, testfilelow):
         accuracy += 0.5
 
     return accuracy
+
+'''
+2.2.4
+
+  We found that our language model is not very accurate in terms of predicting high vs. low returns.
+  The precision, recall, accuracy values work out to be (0.54, 0.54, 0.54). The SRILM language model
+  is only a little better, at (0.5636363636363636, 0.62, 0.57). Both these results are only a little
+  bit better than random chance. This shows that language models are not good predictors for this task.
+  
+  (Aside: Curiously, if we eliminate the <UNK> substitution (deleting the following in the logprob function:
+         if event not in self.events:
+            event = '<UNK>')
+  the precision, recall, accuracy increases to (0.589, 0.66, 0.60). This may suggest that rather than
+  guessing occurences of <UNK> words it would be better to just assign unknown words the probability
+  of chance. However, it may also just be a purely random occurence due to this test data set that we use)
+
+  The merged text accuracy is better for our own language model, which gives an accuracy of 1.0. The
+  accuracy of the SRILM model is 0.5. This suggests that our own language model got an increase in performance
+  possibly because of more context queues. However, since the accuracy measure is very binary (only 2 testfiles)
+  we cannot affirmatively conclude any drastic increase in performance. In terms of evaluation, the individual
+  files evaluation is much more useful as it gives more testing data and hence comes up with a meaningful
+  statistic.
+
+  By a simple comparison, the SRILM model is better in terms of perplexity as we see that in the individual
+  events testing this model generates perplexities smaller than our language model. Further, the perplexity values
+  for SRILM in the merged test are smaller than our language model. The perplexity improvement does not translate
+  very visibly into improvement in the main task. Again, both models are not good at predicting stock performances
+  and the SRILM model, despite having a little higher performance, is not much better than our language model.
+
+'''
 
 def main():
     #print sent_transform('The puppy circled it 34,123.397 times.')
