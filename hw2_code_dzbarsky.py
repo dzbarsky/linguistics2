@@ -473,8 +473,8 @@ def main():
 
     #os.system('srilm/ngram-count -text all_highd.txt -cdiscount 0.75 -interpolate -order 3 -lm lm_interpolated')
 
-    lms = ['lm_default_1', 'lm_default_2', 'lm_default_3', 'lm_discount_1', 'lm_discount_2', 'lm_discount_3', 'lm_interpolated', 'lm_laplace_1', 'lm_laplace_2', 'lm_laplace_3']
-    print get_lm_ranking(lms, 'all_highd.txt')
+    #lms = ['lm_default_1', 'lm_default_2', 'lm_default_3', 'lm_discount_1', 'lm_discount_2', 'lm_discount_3', 'lm_interpolated', 'lm_laplace_1', 'lm_laplace_2', 'lm_laplace_3']
+    #print get_lm_ranking(lms, 'all_highd.txt')
 
 if __name__ == "__main__":
     main()
