@@ -278,26 +278,6 @@ def lm_predict_merged(lm_high, lm_low, testfilehigh, testfilelow):
         accuracy += 0.5
     return accuracy
 
-'''
-On evaluation of our language model:
-  We found that our language model is not very accurate in terms of predicting high vs. low returns.
-  The precision, recall, accuracy values work out to be (0.54, 0.54, 0.54), which are only a little
-  bit better than random chance. Fundamentally, this is because of data sparsity. We have many cases
-  where the context or event has never been seen before by the models. Curiously, if we eliminate the
-  <UNK> substitution (deleting the following in the logprob function:
-         if event not in self.events:
-            event = '<UNK>')
-  the precision, recall, accuracy increases to (0.589, 0.66, 0.60). This suggests that rather than
-  guessing occurences of <UNK> words it would be better to just assign unknown words the probability
-  of chance. However, the fact that changing the implementation of seeing the unknown word changes
-  the probability is also a reflection of how sparse our data is.
-
-  On testing the merged texts, we are able to arrive at an accuracy of 1.0. This shows that if the test
-  file is long enough, then there are enough clues for our language models to pick up to accurately predict
-  the file's associated returns.
-
-'''
-
 def print_sentences_from_files(file_names, outfilename):
     sentences = load_collection_sentences(file_names, 'data')
     with open(outfilename, 'w') as outfile:
@@ -326,11 +306,66 @@ def srilm_predict(lmfilehigh, lmfilelow, testfileshigh, testfileslow):
             results_low.add(testfile)
         else:
             results_high.add(testfile)
-    #we evaluate the big merged text here since the models have already been built in this function
+    
     pres = len(results_high.intersection(bench_high))/float(len(results_high))
     recall = len(results_high.intersection(bench_high))/float(len(bench_high))
     accu = (len(results_high.intersection(bench_high))+len(results_low.intersection(bench_low)))/float(len(results_high)+len(results_low))
     return (pres, recall, accu)
+
+def srilm_predict_merged(lm_high, lm_low, testfilehigh, testfilelow):
+    accuracy = 0.0
+    p_high1 = subprocess.check_output(["srilm/ngram", "-lm", lm_high, "-ppl", testfilehigh])
+    p_low1 = subprocess.check_output(["srilm/ngram", "-lm", lm_low, "-ppl", testfilehigh])
+
+    p_high1 = p_high1[p_high1.find('ppl') + 5:]
+    p_high1 = float(p_high1[:p_high1.find(' ')])
+    p_low1 = p_low1[p_low1.find('ppl') + 5:]
+    p_low1 = float(p_low1[:p_low1.find(' ')])
+
+    p_high2 = subprocess.check_output(["srilm/ngram", "-lm", lm_high, "-ppl", testfilelow])
+    p_low2 = subprocess.check_output(["srilm/ngram", "-lm", lm_low, "-ppl", testfilelow])
+
+    p_high2 = p_high2[p_high2.find('ppl') + 5:]
+    p_high2 = float(p_high2[:p_high2.find(' ')])
+    p_low2 = p_low2[p_low2.find('ppl') + 5:]
+    p_low2 = float(p_low2[:p_low2.find(' ')])
+    
+    if p_high1 < p_low1:
+        accuracy += 0.5
+    if p_low2 < p_high2:
+        accuracy += 0.5
+
+    return accuracy
+
+'''
+2.2.4
+
+  We found that our language model is not very accurate in terms of predicting high vs. low returns.
+  The precision, recall, accuracy values work out to be (0.54, 0.54, 0.54). The SRILM language model
+  is only a little better, at (0.5636363636363636, 0.62, 0.57). Both these results are only a little
+  bit better than random chance. This shows that language models are not good predictors for this task.
+  
+  (Aside: Curiously, if we eliminate the <UNK> substitution (deleting the following in the logprob function:
+         if event not in self.events:
+            event = '<UNK>')
+  the precision, recall, accuracy increases to (0.589, 0.66, 0.60). This may suggest that rather than
+  guessing occurences of <UNK> words it would be better to just assign unknown words the probability
+  of chance. However, it may also just be a purely random occurence due to this test data set that we use)
+
+  The merged text accuracy is better for our own language model, which gives an accuracy of 1.0. The
+  accuracy of the SRILM model is 0.5. This suggests that our own language model got an increase in performance
+  possibly because of more context queues. However, since the accuracy measure is very binary (only 2 testfiles)
+  we cannot affirmatively conclude any drastic increase in performance. In terms of evaluation, the individual
+  files evaluation is much more useful as it gives more testing data and hence comes up with a meaningful
+  statistic.
+
+  By a simple comparison, the SRILM model is better in terms of perplexity as we see that in the individual
+  events testing this model generates perplexities smaller than our language model. Further, the perplexity values
+  for SRILM in the merged test are smaller than our language model. The perplexity improvement does not translate
+  very visibly into improvement in the main task. Again, both models are not good at predicting stock performances
+  and the SRILM model, despite having a little higher performance, is not much better than our language model.
+
+'''
 
 def get_top_unigrams(lm_file, t):
     words = []
@@ -374,6 +409,7 @@ def main():
     #    print_sentences_from_files(['test_data/' + file], 'srilm/' + file)
     #gen_lm_from_file('all_highd.txt', 'highd_lm')
     #gen_lm_from_file('all_lowd.txt', 'lowd_lm')
+<<<<<<< HEAD
     #print srilm_predict('highd_lm', 'lowd_lm', testfileshigh, testfileslow)
     print get_top_unigrams('highd_lm', 50)
     '''
@@ -384,6 +420,10 @@ def main():
 ['the', 'of', 'to', 'and', 'for', 'in', 'a', '</s>', 'million', 'Inc.', 'on', 'per', 'quarter', 'or', 'share', 'income', 'net', 'that', 'from', 'will', 'company', 'diluted', 'announced', 'reported', 'its', 'with', 'Earnings', 'earnings', 'as', 'was', 'million,', 'Corp.', 'year', 'is', 'has', 'compared', 'an', 'period', 'by', 'Quarter', 'be', 'ended', 'results', 'Communications', 'Results', 'same', 'at', 'Corporation', 'first', '30,']
     '''
 
+=======
+    print srilm_predict('highd_lm', 'lowd_lm', testfileshigh, testfileslow)
+    print srilm_predict_merged('highd_lm', 'lowd_lm', './merged_high.txt', './merged_low.txt')
+>>>>>>> a6b37bf7955c0ce1e752650e22730297b73a5406
 
 
 if __name__ == "__main__":
