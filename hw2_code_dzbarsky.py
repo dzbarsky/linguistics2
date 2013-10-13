@@ -300,7 +300,28 @@ def print_sentences_from_files(file_names, outfilename):
 def gen_lm_from_file(input, output):
     os.system('srilm/ngram-count -text ' + input + ' -lm ' + output)
 
-#def srilm predict(lmfilehigh, lmfilelow, testfileshigh, testfileslow):
+def srilm_predict(lmfilehigh, lmfilelow, testfileshigh, testfileslow):
+    results_high = set()
+    bench_high = set()
+    results_low  = set()
+    bench_low = set()
+
+    for testfile in testfiledict.keys():
+        p_high = os.system('NGRAM_LOC -lm ' + highd_lm + ' -ppl test_data/' + testfile)
+        p_low = os.system('NGRAM_LOC -lm ' + lowd_lm + ' -ppl test_data/' + testfile)
+        if p_low < p_high:
+            results_low.add(testfile)
+        else:
+            results_high.add(testfile)
+        if testfiledict[testfile] > 0.0:
+            bench_high.add(testfile)
+        else:
+            bench_low.add(testfile)
+    #we evaluate the big merged text here since the models have already been built in this function
+    pres = len(results_high.intersection(bench_high))/float(len(results_high))
+    recall = len(results_high.intersection(bench_high))/float(len(bench_high))
+    accu = (len(results_high.intersection(bench_high))+len(results_low.intersection(bench_low)))/float(len(results_high)+len(results_low))
+    return (pres, recall, accu)
 
 
 def main():
@@ -323,8 +344,9 @@ def main():
     #for file in get_all_files('test_data'):
     #    print file
     #    print_sentences_from_files(['test_data/' + file], 'srilm/' + file)
-    gen_lm_from_file('all_highd.txt', 'highd_lm')
-    gen_lm_from_file('all_lowd.txt', 'lowd_lm')
+    #gen_lm_from_file('all_highd.txt', 'highd_lm')
+    #gen_lm_from_file('all_lowd.txt', 'lowd_lm')
+    print srilm_predict(trainfileshigh, trainfileslow, testfiledict)
 
 
 
