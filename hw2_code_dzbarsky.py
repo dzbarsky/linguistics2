@@ -237,7 +237,7 @@ def lm_predict(trainfileshigh, trainfileslow, testfiledict):
             bench_high.add(testfile)
         else:
             bench_low.add(testfile)
-    #we evaluate the big merged text here since the models have already been built in this function
+    #we evaluate the big merged text here since the language models have already been built in this function
     print 'merged texts evaluation accuracy =' + str(lm_predict_merged(lm_high, lm_low, './merged_high.txt', './merged_low.txt'))
     pres = len(results_high.intersection(bench_high))/float(len(results_high))
     recall = len(results_high.intersection(bench_high))/float(len(bench_high))
@@ -257,7 +257,7 @@ def merge_files(fileshigh, fileslow, testfilehigh, testfilelow):
                 for line in infile:
                     outfile.write(line)
 
-
+#function for evaluating the two merged files
 def lm_predict_merged(lm_high, lm_low, testfilehigh, testfilelow):
     accuracy = 0.0
     p_high1 = lm_high.getppl(testfilehigh)
