@@ -385,6 +385,27 @@ def get_top_unigrams(lm_file, t):
     words.sort(key=lambda x: x[0])
     return [x[1] for x in words[:t]]
 
+'''
+  Here are the top unigrams for the language model trained on high return files:
+  ['the', 'of', 'to', 'and', 'for', 'a', 'in', '</s>', 'million', 'Inc.', 'per', 'on',
+  'or', 'quarter', 'that', 'share', 'will', 'from', 'net', 'income', 'announced', 'as', 
+  'diluted', 'with', 'company', 'Earnings', 'reported', 'was', 'year', 'earnings', 'Corp.',
+  'is', 'its', 'compared', 'has', 'million,', 'first', 'by', 'an', 'at', 'ended', 'results',
+  'Quarter', 'Communications', 'Results', 'be', 'Corporation', 'period', '2008', 'revenue']
+
+  Here are the top unigrams for the language model trained on low return files:
+  ['the', 'of', 'to', 'and', 'for', 'in', 'a', '</s>', 'million', 'Inc.', 'on', 'per', 'quarter',
+  'or', 'share', 'income', 'net', 'that', 'from', 'will', 'company', 'diluted', 'announced',
+  'reported', 'its', 'with', 'Earnings', 'earnings', 'as', 'was', 'million,', 'Corp.', 'year', 'is',
+  'has', 'compared', 'an', 'period', 'by', 'Quarter', 'be', 'ended', 'results', 'Communications',
+  'Results', 'same', 'at', 'Corporation', 'first', '30,']
+
+  The two are almost exactly the same. Only 2 words are different. This would explain why
+  our models are bad at predicting returns since both high and low return files use very similar
+  words.
+
+'''
+
 def main():
     #print sent_transform('The puppy circled it 34,123.397 times.')
     #print make_ngram_tuples(sent_transform('She eats happily'), 2)
@@ -409,22 +430,14 @@ def main():
     #    print_sentences_from_files(['test_data/' + file], 'srilm/' + file)
     #gen_lm_from_file('all_highd.txt', 'highd_lm')
     #gen_lm_from_file('all_lowd.txt', 'lowd_lm')
-<<<<<<< HEAD
     #print srilm_predict('highd_lm', 'lowd_lm', testfileshigh, testfileslow)
-    print get_top_unigrams('highd_lm', 50)
-    '''
-['the', 'of', 'to', 'and', 'for', 'a', 'in', '</s>', 'million', 'Inc.', 'per', 'on', 'or', 'quarter', 'that', 'share', 'will', 'from', 'net', 'income', 'announced', 'as', 'diluted', 'with', 'company', 'Earnings', 'reported', 'was', 'year', 'earnings', 'Corp.', 'is', 'its', 'compared', 'has', 'million,', 'first', 'by', 'an', 'at', 'ended', 'results', 'Quarter', 'Communications', 'Results', 'be', 'Corporation', 'period', '2008', 'revenue']
-    '''
-    print get_top_unigrams('lowd_lm', 50)
-    '''
-['the', 'of', 'to', 'and', 'for', 'in', 'a', '</s>', 'million', 'Inc.', 'on', 'per', 'quarter', 'or', 'share', 'income', 'net', 'that', 'from', 'will', 'company', 'diluted', 'announced', 'reported', 'its', 'with', 'Earnings', 'earnings', 'as', 'was', 'million,', 'Corp.', 'year', 'is', 'has', 'compared', 'an', 'period', 'by', 'Quarter', 'be', 'ended', 'results', 'Communications', 'Results', 'same', 'at', 'Corporation', 'first', '30,']
-    '''
-
-=======
-    print srilm_predict('highd_lm', 'lowd_lm', testfileshigh, testfileslow)
-    print srilm_predict_merged('highd_lm', 'lowd_lm', './merged_high.txt', './merged_low.txt')
->>>>>>> a6b37bf7955c0ce1e752650e22730297b73a5406
-
+    #print srilm_predict_merged('highd_lm', 'lowd_lm', './merged_high.txt', './merged_low.txt')
+    #l1 = get_top_unigrams('highd_lm', 50)
+    #l2 = get_top_unigrams('lowd_lm', 50)
+    #print l1
+    #print l2
+    #print len(set(l1).intersection(set(l2)))
+    
 
 if __name__ == "__main__":
     main()
