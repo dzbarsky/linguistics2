@@ -367,23 +367,26 @@ def srilm_predict_merged(lm_high, lm_low, testfilehigh, testfilelow):
 
 '''
 
-def get_top_unigrams(lm_file, t):
-    words = []
-    with open(lm_file) as lm:
-        for i in range(3):
-            line = lm.readline()
-        count = int(line[line.find('=') + 1:])
-        for i in range(4):
-            lm.readline()
-        for i in range(count):
-            line = lm.readline()
-            prob = line[0:line.find('\t')]
-            line = line[line.find('\t') + 1:]
-            word = line[0:line.find('\t')]
-            words.append((prob, word))
-        lm.close()
-    words.sort(key=lambda x: x[0])
-    return [x[1] for x in words[:t]]
+def get_top_unigrams(lm_files, t):
+    lists = []
+    for lm_file in lm_files:
+        words = []
+        with open(lm_file) as lm:
+            for i in range(3):
+                line = lm.readline()
+            count = int(line[line.find('=') + 1:])
+            for i in range(4):
+                lm.readline()
+            for i in range(count):
+                line = lm.readline()
+                prob = line[0:line.find('\t')]
+                line = line[line.find('\t') + 1:]
+                word = line[0:line.find('\t')]
+                words.append((prob, word))
+            lm.close()
+        words.sort(key=lambda x: x[0])
+        lists.append([x[1] for x in words[:t]])
+    return lists
 
 '''
 2.2.5
