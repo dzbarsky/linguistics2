@@ -105,6 +105,9 @@ class NGramModel:
     def logprob(self, context, event):
         if event not in self.events:
             event = '<UNK>'
+        for i in range(len(context)):
+            if context[i] not in self.events:
+                context[i] = '<UNK>'
         ngram = (context, event)
         num = self.ngram_freq[ngram] if ngram in self.ngram_freq.keys() else 0
         denom = self.context_freq[context] if context in self.context_freq.keys() else 0
@@ -426,8 +429,8 @@ def get_lm_ranking(lm_file_list, test_text_file):
   ['lm_interpolated', 'lm_discount_3', 'lm_default_3', 'lm_discount_2', 'lm_default_2', 'lm_default_1',
   'lm_discount_1', 'lm_laplace_1', 'lm_laplace_2', 'lm_laplace_3']
   This shows that the 3-gram models are the best. Further, the Ney’s absolute discounting with interpolation
-  smoothing method is the best and the Laplace smoothing method is the worst. 
-
+  smoothing method is the best and the Laplace smoothing method is the worst.
+  
 '''
 
 def main():
@@ -444,9 +447,9 @@ def main():
     testfileslow = set(ld.keys())
     testfileshigh = set(hd.keys())
     #merge_files(hd.keys(), ld.keys(), 'merged_high.txt', 'merged_low.txt')
-    #ld.update(hd)
-    #testfiledict = ld
-    #print lm_predict(trainfileshigh, trainfileslow, testfiledict)
+    ld.update(hd)
+    testfiledict = ld
+    print lm_predict(trainfileshigh, trainfileslow, testfiledict)
     #print_sentences_from_files(trainfileshigh, 'all_highd.txt')
     #print_sentences_from_files(trainfileslow, 'all_lowd.txt')
     #for file in get_all_files('test_data'):
