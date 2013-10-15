@@ -428,8 +428,9 @@ def get_lm_ranking(lm_file_list, test_text_file):
   Here is the sorted list of language models from best to worst (smallest to highest perplexivity):
   ['lm_interpolated', 'lm_discount_3', 'lm_default_3', 'lm_discount_2', 'lm_default_2', 'lm_default_1',
   'lm_discount_1', 'lm_laplace_1', 'lm_laplace_2', 'lm_laplace_3']
-  This shows that the 3-gram models are the best. Further, the Ney’s absolute discounting with interpolation
-  smoothing method is the best and the Laplace smoothing method is the worst. 
+  This shows that the 3-gram models are the best. Further, the Ney's absolute
+  discounting with interpolation smoothing method is the best and the Laplace
+  smoothing method is the worst.
 
 '''
 
