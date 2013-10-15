@@ -246,7 +246,9 @@ def lm_predict(trainfileshigh, trainfileslow, testfiledict):
         else:
             bench_low.add(testfile)
     #we evaluate the big merged text here since the language models have already been built in this function
-    print 'merged texts evaluation accuracy =' + str(lm_predict_merged(lm_high, lm_low, './merged_high.txt', './merged_low.txt'))
+    #print 'Our language model: merged texts evaluation accuracy' 
+    #print lm_predict_merged(lm_high, lm_low, './merged_high.txt', './merged_low.txt')
+
     pres = len(results_high.intersection(bench_high))/float(len(results_high))
     recall = len(results_high.intersection(bench_high))/float(len(bench_high))
     accu = (len(results_high.intersection(bench_high))+len(results_low.intersection(bench_low)))/float(len(results_high)+len(results_low))
@@ -341,16 +343,17 @@ def srilm_predict_merged(lm_high, lm_low, testfilehigh, testfilelow):
 2.2.4
 
   We found that our language model is not very accurate in terms of predicting high vs. low returns.
-  The precision, recall, accuracy values work out to be (0.54, 0.54, 0.54). The SRILM language model
-  is only a little better, at (0.5636363636363636, 0.62, 0.57). Both these results are only a little
-  bit better than random chance. This shows that language models are not good predictors for this task.
+  The precision, recall, accuracy values work out to be (0.5384615384615384, 0.56, 0.54). The SRILM
+  language model is only a little better, at (0.5636363636363636, 0.62, 0.57). Both these results 
+  are only a little bit better than random chance. This shows that language models are not good 
+  predictors for this task.
   
   (Aside: Curiously, if we eliminate the <UNK> substitution (deleting the following in the logprob function:
          if event not in self.events:
             event = '<UNK>')
   the precision, recall, accuracy increases to (0.589, 0.66, 0.60). This may suggest that rather than
   guessing occurences of <UNK> words it would be better to just assign unknown words the probability
-  of chance. However, it may also just be a purely random occurence due to this test data set that we use)
+  of chance. However, it is more likely just be a purely random occurence due to this test data set that we use)
 
   The merged text accuracy is better for our own language model, which gives an accuracy of 1.0. The
   accuracy of the SRILM model is 0.5. This suggests that our own language model got an increase in performance
@@ -360,10 +363,11 @@ def srilm_predict_merged(lm_high, lm_low, testfilehigh, testfilelow):
   statistic.
 
   By a simple comparison, the SRILM model is better in terms of perplexity as we see that in the individual
-  events testing this model generates perplexities smaller than our language model. Further, the perplexity values
-  for SRILM in the merged test are smaller than our language model. The perplexity improvement does not translate
-  very visibly into improvement in the main task. Again, both models are not good at predicting stock performances
-  and the SRILM model, despite having a little higher performance, is not much better than our language model.
+  events testing this model generates perplexities smaller than our language model for the same sentence. 
+  Further, the perplexity values for SRILM in the merged test are smaller than our language model. The perplexity 
+  improvement does not translate very visibly into improvement in the main task. Again, both models are not
+  good at predicting stock performances and the SRILM model, despite having higher perplexity, 
+  is not much better than our language model in terms of accuracy
 
 '''
 
@@ -444,9 +448,9 @@ def main():
     #lowd, highd = get_files_listed('data', 'xret_tails.txt')
     #trainfileshigh = highd.keys()
     #trainfileslow = lowd.keys()
-    ld, hd = get_files_listed('test_data', 'xret_tails.txt')
-    testfileslow = set(ld.keys())
-    testfileshigh = set(hd.keys())
+    #ld, hd = get_files_listed('test_data', 'xret_tails.txt')
+    #testfileslow = set(ld.keys())
+    #testfileshigh = set(hd.keys())
     #merge_files(hd.keys(), ld.keys(), 'merged_high.txt', 'merged_low.txt')
     #ld.update(hd)
     #testfiledict = ld
