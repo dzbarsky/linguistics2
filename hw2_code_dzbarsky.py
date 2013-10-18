@@ -105,9 +105,9 @@ class NGramModel:
     def logprob(self, context, event):
         if event not in self.events:
             event = '<UNK>'
-        for i in range(len(context)):
-            if context[i] not in self.events:
-                context[i] = '<UNK>'
+        #this change only deals with unknown context for bigrams
+        if context not in self.context_freq.keys():
+            context = ('<UNK>',)
         ngram = (context, event)
         num = self.ngram_freq[ngram] if ngram in self.ngram_freq.keys() else 0
         denom = self.context_freq[context] if context in self.context_freq.keys() else 0
@@ -227,12 +227,11 @@ def get_files_listed(corpusroot, filelist):
 #to predict the grouping of files in testfiledict
 def lm_predict(lm_high, lm_low, testfileshigh, testfileslow):
     results_high = set()
-    bench_high = set()
+    bench_high = testfileshigh
     results_low  = set()
-    bench_low = set()
+    bench_low = testfileslow
 
-    for testfile in testfileshigh.keys():
-        bench_high.add(testfile)
+    for testfile in testfileshigh:
         if testfile.rfind('/') < 0:
             p_high = lm_high.getppl('test_data/' + testfile)
             p_low = lm_low.getppl('test_data/' + testfile)
@@ -243,8 +242,7 @@ def lm_predict(lm_high, lm_low, testfileshigh, testfileslow):
             results_low.add(testfile)
         else:
             results_high.add(testfile)
-    for testfile in testfileslow.keys():
-        bench_low.add(testfile)
+    for testfile in testfileslow:
         if testfile.rfind('/') < 0:
             p_high = lm_high.getppl('test_data/' + testfile)
             p_low = lm_low.getppl('test_data/' + testfile)
@@ -462,7 +460,7 @@ def main():
     lm_low = NGramModel(trainfileslow, 2)
     #merge_files(hd.keys(), ld.keys(), 'merged_high.txt', 'merged_low.txt')
     print lm_predict(lm_high, lm_low, testfileshigh, testfileslow)
-    #print lm_predict_merged(lm_high, lm_low, './merged_high.txt', './merged_low.txt')
+    print lm_predict_merged(lm_high, lm_low, './merged_high.txt', './merged_low.txt')
     #print_sentences_from_files(trainfileshigh, 'all_highd.txt')
     #print_sentences_from_files(trainfileslow, 'all_lowd.txt')
     #for file in get_all_files('test_data'):
